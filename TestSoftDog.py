@@ -1,3 +1,3 @@
 import SoftDog
 
-print SoftDog.readSoftDogData()
+print SoftDog.readFakeSoftDogData()

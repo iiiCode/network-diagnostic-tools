@@ -55,8 +55,8 @@ def readSoftDogData():
 
     return softDogData
 
-
-
+def readFakeSoftDogData():
+    return "v1;HLG-C1;2;20160623;;19233099"
 
 
     
