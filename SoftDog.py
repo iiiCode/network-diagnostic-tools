@@ -18,10 +18,10 @@ SOFT_DOG_DATA = {}
 def soft_dog_library_exist():
 
     if not os.path.exists(SOFT_DOG_LIBRARY):
-        log.e(SOFT_DOG_LIBRARY + " is not exist.")
+        log.write(SOFT_DOG_LIBRARY + " is not exist.")
         return False
 
-    log.d(SOFT_DOG_LIBRARY + " is exist.")
+    log.write(SOFT_DOG_LIBRARY + " is exist.")
 
     return True
 
@@ -33,13 +33,13 @@ def __read_soft_dog_data(out_buffer):
 
     windll = ctypes.WinDLL(SOFT_DOG_LIBRARY)
     if not windll:
-        log.e("Load soft dog library: " + SOFT_DOG_LIBRARY + " failed!!!")
+        log.write("Load soft dog library: " + SOFT_DOG_LIBRARY + " failed!!!")
         return False
     
-    log.d("Load soft dog library: " + SOFT_DOG_LIBRARY + " Success.")
+    log.write("Load soft dog library: " + SOFT_DOG_LIBRARY + " Success.")
 
     if not windll.DogRead:
-        log.e("Can not find function entry: DogRead")
+        log.write("Can not find function entry: DogRead")
         return False
 
     data_bytes = ctypes.c_ulong(90)
@@ -101,7 +101,7 @@ def get_value_by_key(key):
                 "schoolCode", "classroomCode"]
 
     if key not in key_list:
-        log.e("Key: " + key + " not correct.")
+        log.write("Key: " + key + " not correct.")
         return ""
 
     return SOFT_DOG_DATA[key]

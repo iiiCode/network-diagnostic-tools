@@ -4,10 +4,6 @@
 import sys
 
 
-def d(message):
-    sys.stdout.write("[D] " + message + '\n')
-
-
-def e(message):
-    sys.stdout.write("[E] " + message + '\n')
+def write(message):
+    sys.stdout.write(message + '\n')
 

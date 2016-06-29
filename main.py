@@ -4,14 +4,18 @@ Author: Yunchao Chen
 Date: 2016-6-29
 """
 
-import classroom
+import log
 
-TEST_FUNCS = [
-    classroom.load_music_classroom_test(),
-]
+from config import *
+
+
 
 
 def main():
 
-    for func in TEST_FUNCS:
-        func()
+    log.write(NETWORK_DIAGNOSTIC_START)
+    log.write(NETWORK_DIAGNOSTIC_SUCCESS)
+
+
+if __name__ == '__main__':
+    main()

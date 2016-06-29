@@ -7,7 +7,7 @@ Date: 2016-06-29
 """
 
 # For Soft dog
-SOFT_DOG_DATA_SIZE = 32
+SOFT_DOG_DATA_SIZE = 128
 SOFT_DOG_LIBRARY = "win32dll.dll"
 SOFT_DOG_DATA_HAS_PARSED = False
 
@@ -29,9 +29,30 @@ SERVER_URL_LIST = [
 
 API_LEVEL = API_LEVEL_DEV
 
+RESOURCE_DOWNLOAD_API = "http://cr-api.cr.xiaoyezi.com/api/classroom/1.0/courses"
+
+
+def get_server_url():
+    return SERVER_URL_LIST[API_LEVEL]
+
 
 # For HTTP return code
 HTTP_CODE_OK = 200
 
 # For music classroom pressure test
 MUSIC_CLASSROOM_PRESSURE_TEST = False
+
+# For IP Provider
+IP_PROVIDER = "http://1212.ip138.com/ic.asp"
+
+
+# For Log
+NETWORK_DIAGNOSTIC_START = "网络诊断开始..."
+NETWORK_DIAGNOSTIC_SUCCESS = "网络诊断结束,诊断正常。"
+NETWORK_DIAGNOSTIC_FAILED = "网络诊断结束,诊断异常。"
+
+BAD_SOFT_DOG_LIBRARY = "加密狗库文(win32dll.dll)件损坏。"
+SOFT_DOG_LIBRARY_NOT_FOUND = "加密狗库文件(win32dll.dll)未找到。"
+LOAD_SOFT_DOG_LIBRARY_SUCCESS = "加载加密狗库文件(win32dll.dll)成功。"
+READ_SOFT_DOG_DATA_FAILED = "读取加密狗数据失败,请检查加密狗是否插入,或驱动是否正确安装。"
+READ_SOFT_DOG_DATA_SUCCESS = "读取加密狗数据成功。"
