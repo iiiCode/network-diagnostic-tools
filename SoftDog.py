@@ -1,15 +1,21 @@
+"""
+Read Soft Dog Data. if USE_FAKE_SOFT_DOG_DATA set to True, it will use the FAKE token for the
+following check, please Be Careful.
+
+Author: Yunchao Chen
+Date: 2016-06-29
+"""
+
 import os
 import log
 import ctypes
 
-SOFT_DOG_DATA_SIZE = 256
-SOFT_DOG_LIBRARY = "win32dll.dll"
+from config import *
 
 SOFT_DOG_DATA = {}
-SOFT_DOG_DATA_HAS_PARSED = False
 
 
-def check_soft_dog_library_exist():
+def soft_dog_library_exist():
 
     if not os.path.exists(SOFT_DOG_LIBRARY):
         log.e(SOFT_DOG_LIBRARY + " is not exist.")
@@ -22,9 +28,7 @@ def check_soft_dog_library_exist():
 
 def __read_soft_dog_data(out_buffer):
 
-    # TODO
-    # Check SOFT_DOG_LIBRARY if is exits.
-    if not check_soft_dog_library_exist():
+    if not soft_dog_library_exist():
         return False
 
     windll = ctypes.WinDLL(SOFT_DOG_LIBRARY)
@@ -47,6 +51,10 @@ def __read_soft_dog_data(out_buffer):
 
 
 def _read_soft_dog_data():
+
+    if USE_FAKE_SOFT_DOG_DATA:
+        return FAKE_SOFT_DOG_DATA
+
     soft_dog_data = ""
     out_buffer = (ctypes.c_char * SOFT_DOG_DATA_SIZE)('\0')
 
@@ -57,10 +65,6 @@ def _read_soft_dog_data():
             soft_dog_data = soft_dog_data + item
 
     return soft_dog_data
-
-
-def _read_fake_soft_dog_data():
-    return "v1;HLG-C1;2;20160623;;19233099"
 
 
 def _parse_school_and_classroom_code():
@@ -84,12 +88,12 @@ def _parse_soft_dog_data(soft_dog_data):
     _parse_school_and_classroom_code()
 
 
-def read_soft_dog_data_by_key(key):
+def get_value_by_key(key):
 
     global SOFT_DOG_DATA_HAS_PARSED
 
     if not SOFT_DOG_DATA_HAS_PARSED:
-        _parse_soft_dog_data(_read_fake_soft_dog_data())
+        _parse_soft_dog_data(_read_soft_dog_data())
         SOFT_DOG_DATA_HAS_PARSED = True
 
     key_list = ["token", "version", "schoolAndClassroomCode",
@@ -101,4 +105,3 @@ def read_soft_dog_data_by_key(key):
         return ""
 
     return SOFT_DOG_DATA[key]
-

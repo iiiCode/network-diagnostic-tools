@@ -1,62 +1,96 @@
+# coding=utf-8
+
 import log
+import sys
 import json
 import urllib2
 import softdog
+import network
+
+from config import *
 
 
-API_LEVEL_DEV  = 0
-API_LEVEL_PRE  = 1
-API_LEVEL_PROD = 2
-
-API_VERSION = "1.0"
-
-SERVER_URL_LIST = [
-    "http://cr-api.dev-cr.xiaoyezi.com",
-    "http://cr-api.pre-cr.xiaoyezi.com",
-    "http://cr-api.cr.xiaoyezi.com"
-]
-
-def get_server_url(api_level):
-
-    if api_level < 0 or api_level > 2:
-        log.e("API_LEVEL: " + api_level + " not correct.")
-
-    return SERVER_URL_LIST[api_level]
+def get_server_url():
+    return SERVER_URL_LIST[API_LEVEL]
 
 
-def check_request_result(response):
+"""
+每个机构会有N个音乐教室,每个音乐教室会有一个独立的软件狗,包含一个独立的Toekn,
+通过该Token,可以查询该音乐教室的ID。
+"""
+def search_music_classroom_id():
 
-    obj = json.loads(response)
-    message = obj["request_result"]["message"]
-
-    if message == "OK":
-        log.e("Get current classroom info success.")
-    else:
-        log.e("Get current classroom info failed: " + message)
-
-
-def check_get_current_classroom_info():
-
-    api_level = API_LEVEL_DEV
-
-    url = get_server_url(api_level) \
+    url = get_server_url() \
           + "/api/classroom/1.0/schools/" \
-          + softdog.read_soft_dog_data_by_key("schoolCode") \
+          + softdog.get_value_by_key("schoolCode") \
           + "/classrooms/current"
 
-    log.d("URL: " + url)
+    log.d("Request URL: " + url)
 
-    request = urllib2.Request(url)
-    request.add_header("XiaoYeZi-Client-Token", softdog.read_soft_dog_data_by_key("token"))
-    request.add_header("Content-Type", "application/json")
-    request.add_header("Accept", "application/json")
-    response = urllib2.urlopen(request)
+    try:
+        request = urllib2.Request(url)
+        request.add_header("XiaoYeZi-Client-Token", softdog.get_value_by_key("token"))
+        request.add_header("Content-Type", "application/json")
+        request.add_header("Accept", "application/json")
+        response = urllib2.urlopen(request)
+    except urllib2.URLError, e:
+        log.e("Send request failed: " + str(e.reason))
+        network.network_diagnostic()
+        return ""
 
-    if response.getcode() == 200:
-        log.e("Can communicate with Server: " + get_server_url(api_level))
-        check_request_result(response.read())
+    result = response.read()
+    log.d("Response = " + "\n" + result)
+
+    if response.getcode() == HTTP_CODE_OK:
+        #TODO, add try catch
+        obj = json.loads(result)
+        if obj["request_result"]["message"] == "OK":
+            log.d("Search music classroom id success: " + obj["request_result"]["message"])
+            return str(obj["classrooms"][0]["id"])
+        else:
+            log.e("Search music classroom id failed: " + obj["request_result"]["message"])
+            return ""
     else:
-        log.e("Get current classroom info failed, return code: " + response.getcode())
+        log.e("Search music classroom id failed: " + response.getcode())
+
+    return ""
 
 
-check_get_current_classroom_info()
+def get_teacher_list():
+
+    classroom_id = search_music_classroom_id()
+    if classroom_id == "":
+        return
+
+    url = get_server_url() \
+          + "/api/classroom/1.0/schools/" \
+          + softdog.get_value_by_key("schoolCode") \
+          + "/classrooms/" \
+          + classroom_id \
+          + "/teachers"
+
+    log.d("Request URL: " + url)
+
+    try:
+        request = urllib2.Request(url)
+        request.add_header("XiaoYeZi-Client-Token", softdog.get_value_by_key("token"))
+        request.add_header("Content-Type", "application/json")
+        request.add_header("Accept", "application/json")
+        response = urllib2.urlopen(request)
+    except urllib2.URLError, e:
+        log.e("Send request failed: " + str(e.reason))
+        network.network_diagnostic()
+
+    result = response.read()
+    log.e("Response = " + "\n" + result)
+
+    if response.getcode() == HTTP_CODE_OK:
+        # Need add try catch
+        obj = json.loads(result)
+        log.e("Get teacher list: " + obj["request_result"]["message"])
+    else:
+        log.e("Get teacher list: " + response.getcode())
+
+
+def load_music_classroom_test():
+    get_teacher_list()

@@ -1,3 +1,6 @@
+# coding=utf-8
+
+
 import sys
 
 
@@ -7,3 +10,4 @@ def d(message):
 
 def e(message):
     sys.stdout.write("[E] " + message + '\n')
+
