@@ -20,13 +20,19 @@ def resolve_baidu_domain():
 
     try:
         results = socket.getaddrinfo("www.baidu.com", None)
-
-        for result in results:
-            print result
-
-    except Exception, e:
-        print e
+    except socket.error, err:
+        (errno, error_message) = err
+        error_message = "ErrorNo: " + str(errno) + " " + error_message
+        log.write(error_message)
+        log.write("RESOLVE_BAIDU_DOMAIN_FAILED")
         return False
+
+    ip_list = "BaiDu IPs: "
+    for result in results:
+        ip_list = ip_list + "[" + result[4][0] + "]"
+    log.write(ip_list)
+
+    log.write("RESOLVE_BAIDU_DOMAIN_SUCCESS")
 
     return True
 
@@ -36,25 +42,38 @@ def ping_baidu():
     #TODO only for Unix-like OS
     ret = os.system("ping -c 3 61.135.169.121")
 
-    return ret == 0
+    if ret == 0:
+        log.write("PING_BAIDU_SUCCESS")
+        return True
+
+    log.write("PING_BAIDU_FAILED")
+    return False
 
 
 def ping_gate_way():
 
     host_name = socket.gethostname()
+    log.write("host name: " + host_name)
+
     local_ip = socket.gethostbyname(host_name)
+    log.write("local IP: " + local_ip)
 
     if local_ip == "127.0.0.1":
+        log.write("PC_IP_NOT_CORRECT")
         return False
 
-    print local_ip
     dot_pos = local_ip.rfind(".")
     gate_way_ip = local_ip[0:dot_pos+1] + "1"
+    log.write("Gate way IP: " + gate_way_ip)
 
     # TODO only for Unix-like OS
     ret = os.system("ping -c 3 " + gate_way_ip)
+    if ret == 0:
+        log.write("PING_GATE_WAY_SUCCESS")
+        return True
 
-    return ret == 0
+    log.write("PING_GATE_WAY_FAILED")
+    return False
 
 
 def get_ip_provider_info():
@@ -64,32 +83,37 @@ def get_ip_provider_info():
         response = urllib2.urlopen(request)
     except urllib2.URLError, e:
         log.write(e.reason)
-        return ""
+        log.write("GET_IP_PROVIDER_INFO_FAILED")
 
     ret = str(response.read()).decode("gb2312")
 
     lpos = ret.find("center")
     rpos = ret.rfind("center")
 
-    return ret[lpos+7:rpos-2]
+    log.write("GET_IP_PROVIDER_INFO_SUCCESS")
+
+    log.write(ret[lpos+7:rpos-2].encode("utf-8"))
 
 
-def resolve_api_domain():
+def resolve_server_api_domain():
 
     try:
         results = socket.getaddrinfo(get_server_url(), None)
-
-        for result in results:
-            print result
-
     except Exception, e:
-        print e
+        log.write(str(e))
+        log.write("RESOLVE_XIOYEZI_SERVER_API_DOMAIN_FAILED")
         return False
 
+    str = "XiaoYeZi IPs: "
+    for result in results:
+        str = str + "[" + result[4][0] + "]"
+
+    log.write(str)
+    log.write("RESOLVE_XIOYEZI_SERVER_API_DOMAIN_SUCCESS")
     return True
 
 
-def access_download_api():
+def access_resource_download_api():
 
     try:
         request = urllib2.Request(RESOURCE_DOWNLOAD_API)
@@ -97,7 +121,8 @@ def access_download_api():
         request.add_header("Accept", "application/json")
         response = urllib2.urlopen(request)
     except urllib2.URLError, e:
-        log.write(e.reason)
+        log.write(str(e.reason))
+        log.write("ACCESS_RESOURCE_DOWNLOAD_API_FAILED")
         return False
 
     ret = response.read()
@@ -108,9 +133,11 @@ def access_download_api():
         obj = json.loads(ret)
 
         if obj["request_result"]["message"] == "OK":
+            log.write("ACCESS_RESOURCE_DOWNLOAD_API_SUCCESS")
             return True
 
     log.write(response.getcode())
+    log.write("ACCESS_RESOURCE_DOWNLOAD_API_FAILED")
 
     return False
 
@@ -131,6 +158,7 @@ def access_get_classroom_api():
         request.add_header("Accept", "application/json")
         response = urllib2.urlopen(request)
     except urllib2.URLError, e:
+        log.write("ACCESS_GET_CLASSROOM_API_FAILED")
         log.write("Send request failed: " + str(e.reason))
         return False
 
@@ -141,8 +169,10 @@ def access_get_classroom_api():
         # TODO, add try catch
         obj = json.loads(result)
         if obj["request_result"]["message"] == "OK":
+            log.write("ACCESS_GET_CLASSROOM_API_SUCCESS")
             return True
 
+    log.write("ACCESS_GET_CLASSROOM_API_FAILED")
     return False
 
 
@@ -150,27 +180,17 @@ def network_diagnostic():
 
     if not resolve_baidu_domain():
         if ping_baidu():
-            log.write("DNS问题")
+            log.write("DNS_ERROR")
         else:
             if ping_gate_way():
-                log.write("外网设置问题。")
+                log.write("ETHERNET_ERROR")
             else:
-                log.write("路由器连接问题。")
+                log.write("ROUTER_ERROR")
 
     else:
         get_ip_provider_info()
 
-        if not resolve_api_domain():
-            log.write("API域名DNS问题。")
-        else:
-            if not access_download_api():
-                log.write("访问我们服务有问题")
-            else:
-                if not access_get_classroom_api():
-                    log.write("访问获取教室API有问题。")
-                else:
-                    log.write("访问获取教室API正常。")
-                    log.write("网络诊断正常。")
-
-
-network_diagnostic()
+        if resolve_server_api_domain():
+            if access_resource_download_api():
+                if access_get_classroom_api():
+                    log.write("NETWORK_DIAGNOSTIC_SUCCESS")

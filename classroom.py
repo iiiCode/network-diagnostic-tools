@@ -32,7 +32,6 @@ def search_music_classroom_id():
         response = urllib2.urlopen(request)
     except urllib2.URLError, e:
         log.write("Send request failed: " + str(e.reason))
-        network.network_diagnostic()
         return ""
 
     result = response.read()
@@ -57,7 +56,11 @@ def get_teacher_list():
 
     classroom_id = search_music_classroom_id()
     if classroom_id == "":
+        log.write("GET_CLASSROOM_ID_FAILED")
+        network.network_diagnostic()
         return
+
+    log.write("GET_CLASSROOM_ID_SUCCESS")
 
     url = get_server_url() \
           + "/api/classroom/1.0/schools/" \
@@ -76,7 +79,9 @@ def get_teacher_list():
         response = urllib2.urlopen(request)
     except urllib2.URLError, e:
         log.write("Send request failed: " + str(e.reason))
+        log.write("GET_CLASSROOM_TEACHER_LIST_FAILED")
         network.network_diagnostic()
+        return
 
     result = response.read()
     log.write("Response = " + "\n" + result)
@@ -85,8 +90,10 @@ def get_teacher_list():
         # Need add try catch
         obj = json.loads(result)
         log.write("Get teacher list: " + obj["request_result"]["message"])
+        log.write("GET_CLASSROOM_TEACHER_LIST_SUCCESS")
     else:
         log.write("Get teacher list: " + response.getcode())
+        log.write("GET_CLASSROOM_TEACHER_LIST_FAILED")
 
 
 def load_music_classroom_test():

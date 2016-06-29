@@ -5,17 +5,14 @@ Date: 2016-6-29
 """
 
 import log
-
-from config import *
-
-
+import classroom
 
 
 def main():
 
-    log.write(NETWORK_DIAGNOSTIC_START)
-    log.write(NETWORK_DIAGNOSTIC_SUCCESS)
+    log.write("NETWORK_DIAGNOSTIC_START")
+    classroom.load_music_classroom_test()
+    log.write("NETWORK_DIAGNOSTIC_FINISH")
 
 
-if __name__ == '__main__':
-    main()
+main()
