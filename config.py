@@ -103,5 +103,7 @@ MSG_DATA = {
     "EXEC_RESOLVE_DOMAIN": "正在解析域名,请稍等...",
 
     "SEARCH_CLASSROOM_ID": "正在获取音乐教室ID,请稍等...",
-    "SEARCH_TEACHER_LIST": "正在获取教师列表,请稍等..."
+    "SEARCH_TEACHER_LIST": "正在获取教师列表,请稍等...",
+
+    "PRESS_ENTER_TO_EXIT": "按键盘回车键退出程序...",
 }
