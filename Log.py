@@ -4,12 +4,13 @@
 import sys
 import time
 
-from config import MSG_DATA
-from config import LOG_FILE_HANDLE
+from config import *
 
 
 def save_to_log_file(message):
+    global LOG_FILE_HANDLE
     LOG_FILE_HANDLE.write(message)
+
 
 def console(message):
     sys.stdout.write(message + "\n")
@@ -49,5 +50,7 @@ def open_file(file_name):
 
 
 def close_file():
+    global LOG_FILE_HANDLE
     LOG_FILE_HANDLE.close()
+    LOG_FILE_HANDLE = None
 
