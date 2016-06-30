@@ -38,7 +38,7 @@ def write(message):
 def generate_log_file_name():
 
     file_name = "network-diagnostic-"
-    date_str = time.strftime('%Y-%m-%d-%H:%M:%S')
+    date_str = time.strftime('%Y-%m-%d-%H_%M_%S')
 
     return file_name + date_str + ".log"
 

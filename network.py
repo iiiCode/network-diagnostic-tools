@@ -8,6 +8,7 @@ Date: 2016-06-29
 
 import os
 import log
+import sys
 import json
 import socket
 import urllib2
@@ -20,8 +21,16 @@ from config import *
 def ping(server):
 
     log.write("EXEC_PING_COMMAND")
-    ret = subprocess.call(["ping", "-c 3",  server],
-                          stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+    if sys.platform == "win32":
+        ret = subprocess.call(["ping", server],
+                              stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    elif sys.platform == "darwin" or sys.platform == "linux":
+        ret = subprocess.call(["ping", "-c 3", server],
+                              stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    else:
+        log.write("Platform: " + sys.platform + " do not support.")
+        return False
 
     return ret == 0
 
