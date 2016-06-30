@@ -81,7 +81,7 @@ MSG_DATA = {
     "PC_IP_NOT_CORRECT": "本机获取的IP不正确。",
 
     "PING_GATE_WAY_SUCCESS": "ping路由器网关成功。",
-    "PING_GATE_WAY_SUCCESS": "ping路由器网关失败。",
+    "PING_GATE_WAY_FAILED": "ping路由器网关失败。",
 
     "GET_IP_PROVIDER_INFO_SUCCESS": "获取机构IP供应商信息成功。",
     "GET_IP_PROVIDER_INFO_FAILED": "获取机构IP供应商信息失败。",
@@ -102,6 +102,6 @@ MSG_DATA = {
     "EXEC_PING_COMMAND": "正在执行ping命令,请稍等...",
     "EXEC_RESOLVE_DOMAIN": "正在解析域名,请稍等...",
 
-    "SEARCH_CLASSROOM_ID": "正在搜索音乐教室ID,请稍等...",
+    "SEARCH_CLASSROOM_ID": "正在获取音乐教室ID,请稍等...",
     "SEARCH_TEACHER_LIST": "正在获取教师列表,请稍等..."
 }
