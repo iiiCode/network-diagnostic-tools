@@ -17,6 +17,8 @@ from config import *
 
 def search_music_classroom_id():
 
+    log.write("SEARCH_CLASSROOM_ID")
+
     url = get_server_url() \
           + "/api/classroom/1.0/schools/" \
           + softdog.get_value_by_key("schoolCode") \
@@ -38,8 +40,14 @@ def search_music_classroom_id():
     log.write("Response = " + "\n" + result)
 
     if response.getcode() == HTTP_CODE_OK:
-        #TODO, add try catch
-        obj = json.loads(result)
+        # TODO, add try catch
+        try:
+            obj = json.loads(result)
+        except Exception, e:
+            log.write("Json parse failed.")
+            network.network_diagnostic()
+            return ""
+
         if obj["request_result"]["message"] == "OK":
             log.write("Search music classroom id success: " + obj["request_result"]["message"])
             return str(obj["classrooms"][0]["id"])
@@ -54,10 +62,11 @@ def search_music_classroom_id():
 
 def get_teacher_list():
 
+    log.write("SEARCH_TEACHER_LIST")
+
     classroom_id = search_music_classroom_id()
     if classroom_id == "":
         log.write("GET_CLASSROOM_ID_FAILED")
-        network.network_diagnostic()
         return
 
     log.write("GET_CLASSROOM_ID_SUCCESS")
@@ -87,10 +96,16 @@ def get_teacher_list():
     log.write("Response = " + "\n" + result)
 
     if response.getcode() == HTTP_CODE_OK:
-        # Need add try catch
-        obj = json.loads(result)
+
+        try:
+            obj = json.loads(result)
+        except Exception, e:
+            log.write("Json parse failed.")
+            network.network_diagnostic()
+            return
         log.write("Get teacher list: " + obj["request_result"]["message"])
         log.write("GET_CLASSROOM_TEACHER_LIST_SUCCESS")
+        log.write("NETWORK_DIAGNOSTIC_SUCCESS")
     else:
         log.write("Get teacher list: " + response.getcode())
         log.write("GET_CLASSROOM_TEACHER_LIST_FAILED")

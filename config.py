@@ -48,7 +48,7 @@ IP_PROVIDER = "http://1212.ip138.com/ic.asp"
 
 # For Log
 
-LOG_FILE_NAME = "result.log"
+LOG_FILE_HANDLE = None
 
 MSG_DATA = {
     "NETWORK_DIAGNOSTIC_START": "网络诊断开始...",
@@ -99,6 +99,9 @@ MSG_DATA = {
     "ETHERNET_ERROR": "公网配置错误,请检查公网配置。",
     "ROUTER_ERROR" : "电脑没有连接路由器,请检查电脑和路由器连线。",
 
+    "EXEC_PING_COMMAND": "正在执行ping命令,请稍等...",
+    "EXEC_RESOLVE_DOMAIN": "正在解析域名,请稍等...",
 
-
+    "SEARCH_CLASSROOM_ID": "正在搜索音乐教室ID,请稍等...",
+    "SEARCH_TEACHER_LIST": "正在获取教师列表,请稍等..."
 }

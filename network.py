@@ -12,14 +12,40 @@ import json
 import socket
 import urllib2
 import softdog
+import subprocess
 
 from config import *
 
 
+def ping(server):
+
+    log.write("EXEC_PING_COMMAND")
+    ret = subprocess.call(["ping", "-c 3",  server],
+                          stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+    return ret == 0
+
+
+def ip_check(ip_list):
+
+    for ip in ip_list:
+        _ip = str(ip[4][0])
+
+        if _ip.startswith("10.") or \
+            _ip.startswith("172.") or \
+            _ip.startswith("192.168"):
+
+            return False
+
+    return True
+
+
 def resolve_baidu_domain():
 
+    log.write("EXEC_RESOLVE_DOMAIN")
+
     try:
-        results = socket.getaddrinfo("www.baidu.com", None)
+        results = socket.getaddrinfo("www.baidu.com", 80, socket.AF_INET, 0, 0, 0)
     except socket.error, err:
         (errno, error_message) = err
         error_message = "ErrorNo: " + str(errno) + " " + error_message
@@ -32,6 +58,10 @@ def resolve_baidu_domain():
         ip_list = ip_list + "[" + result[4][0] + "]"
     log.write(ip_list)
 
+    if not ip_check(results):
+        log.write("RESOLVE_BAIDU_DOMAIN_FAILED")
+        return False
+
     log.write("RESOLVE_BAIDU_DOMAIN_SUCCESS")
 
     return True
@@ -39,10 +69,7 @@ def resolve_baidu_domain():
 
 def ping_baidu():
 
-    #TODO only for Unix-like OS
-    ret = os.system("ping -c 3 61.135.169.121")
-
-    if ret == 0:
+    if ping("61.135.169.121"):
         log.write("PING_BAIDU_SUCCESS")
         return True
 
@@ -66,9 +93,7 @@ def ping_gate_way():
     gate_way_ip = local_ip[0:dot_pos+1] + "1"
     log.write("Gate way IP: " + gate_way_ip)
 
-    # TODO only for Unix-like OS
-    ret = os.system("ping -c 3 " + gate_way_ip)
-    if ret == 0:
+    if ping(gate_way_ip):
         log.write("PING_GATE_WAY_SUCCESS")
         return True
 
@@ -91,11 +116,14 @@ def get_ip_provider_info():
     rpos = ret.rfind("center")
 
     log.write("GET_IP_PROVIDER_INFO_SUCCESS")
-
-    log.write(ret[lpos+7:rpos-2].encode("utf-8"))
+    info = ret[lpos+7:rpos-2].encode("utf-8")
+    log.write(info)
+    log.console(info)
 
 
 def resolve_server_api_domain():
+
+    log.write("EXEC_RESOLVE_DOMAIN")
 
     try:
         results = socket.getaddrinfo(get_server_url(), None)
