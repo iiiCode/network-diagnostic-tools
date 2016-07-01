@@ -26,13 +26,11 @@ def write(message):
             break
 
     if is_msg_data:
-        message = MSG_DATA[message]
+        message = MSG_DATA[message] + "\n"
+        sys.stdout.write(message)
+        return
 
     message = time.strftime('%Y-%m-%d %H:%M:%S') + ": " + message + "\n"
-
-    if is_msg_data:
-        sys.stdout.write(message)
-
     save_to_log_file(message)
 
 

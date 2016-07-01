@@ -21,7 +21,7 @@ def log_destroy():
 
 def pause_until_meet_enter_key():
     print ""
-    raw_input(MSG_DATA["PRESS_ENTER_TO_EXIT"])
+    raw_input("")
 
 
 def main():

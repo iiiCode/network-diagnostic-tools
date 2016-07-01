@@ -34,6 +34,7 @@ def search_music_classroom_id():
         response = urllib2.urlopen(request)
     except urllib2.URLError, e:
         log.write("Send request failed: " + str(e.reason))
+        network.network_diagnostic()
         return ""
 
     result = response.read()

@@ -13,26 +13,10 @@ import json
 import socket
 import urllib2
 import softdog
+import ping
 import subprocess
 
 from config import *
-
-
-def ping(server):
-
-    log.write("EXEC_PING_COMMAND")
-
-    if sys.platform == "win32":
-        ret = subprocess.call(["ping", server],
-                              stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    elif sys.platform == "darwin" or sys.platform == "linux":
-        ret = subprocess.call(["ping", "-c 3", server],
-                              stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    else:
-        log.write("Platform: " + sys.platform + " do not support.")
-        return False
-
-    return ret == 0
 
 
 def ip_check(ip_list):
@@ -78,7 +62,7 @@ def resolve_baidu_domain():
 
 def ping_baidu():
 
-    if ping("61.135.169.121"):
+    if ping.verbose_ping("61.135.169.121", 2, 1):
         log.write("PING_BAIDU_SUCCESS")
         return True
 
@@ -102,7 +86,7 @@ def ping_gate_way():
     gate_way_ip = local_ip[0:dot_pos+1] + "1"
     log.write("Gate way IP: " + gate_way_ip)
 
-    if ping(gate_way_ip):
+    if ping.verbose_ping(gate_way_ip, 2, 1):
         log.write("PING_GATE_WAY_SUCCESS")
         return True
 
@@ -116,7 +100,7 @@ def get_ip_provider_info():
         request = urllib2.Request(IP_PROVIDER)
         response = urllib2.urlopen(request)
     except urllib2.URLError, e:
-        log.write(e.reason)
+        log.write(str(e.reason))
         log.write("GET_IP_PROVIDER_INFO_FAILED")
 
     ret = str(response.read()).decode("gb2312")
