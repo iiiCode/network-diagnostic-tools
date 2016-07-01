@@ -10,6 +10,7 @@ import os
 import log
 import sys
 import json
+import random
 import socket
 import urllib2
 import softdog
@@ -155,6 +156,7 @@ def access_resource_download_api():
 
         if obj["request_result"]["message"] == "OK":
             log.write("ACCESS_RESOURCE_DOWNLOAD_API_SUCCESS")
+            random_resource_download(obj)
             return True
 
     log.write(response.getcode())
@@ -195,6 +197,37 @@ def access_get_classroom_api():
 
     log.write("ACCESS_GET_CLASSROOM_API_FAILED")
     return False
+
+
+def random_resource_download(result):
+
+    lesson_num = len(result["courses"][0]["lessons"])
+    log.write("Totally have " + str(lesson_num) + " lessons.")
+
+    download_index = random.randint(1, lesson_num)
+    log.write("Start download the " + str(download_index) + "lessons")
+    download_url =  result["courses"][0]["lessons"][download_index]["resources"][1]["url"]
+    file_download(download_url)
+
+
+def file_download(url):
+    url = url[:-9] # remove crc32
+    log.write("Download resource URL: " + url)
+
+    log.write("RESOURCE_DOWNLOADING")
+
+    try:
+        hanle = urllib2.urlopen(url)
+        data = hanle.read()
+    except urllib2.URLError, e:
+        log.write("Download resource failed: " + str(e.reason))
+        log.write("DOWNLOAD_RESOURCE_FAILED")
+        return
+
+    with open("test.mp4", "wb") as fp:
+        fp.write(data)
+
+    log.write("DOWNLOAD_RESOURCE_SUCCESS")
 
 
 def network_diagnostic():
